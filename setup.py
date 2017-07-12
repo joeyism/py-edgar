@@ -2,7 +2,7 @@ from distutils.core import setup
 setup(
         name = 'edgar',
         packages = ['edgar'], # this must be the same as the name above
-        version = '0.1',
+        version = '0.2.0',
         description = 'Scrape data from SEC\'s EDGAR',
         author = 'Joey Sham',
         author_email = 'sham.joey@gmail.com',
