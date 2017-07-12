@@ -16,6 +16,30 @@ class Company():
         return html.fromstring(page.content)
 
 
+class Edgar():
+
+    def __init__(self):
+        all_companies_page = requests.get("https://www.sec.gov/edgar/NYU/cik.coleft.c")
+        all_companies_content = all_companies_page.content
+        all_companies_array = all_companies_content.split("\n")
+        del all_companies_array[-1]
+        all_companies_array_rev = []
+        for i, item in enumerate(all_companies_array):
+            if item == "":
+                continue
+            item_arr = item.split(":")
+            all_companies_array[i] = (item_arr[0], item_arr[1])
+            all_companies_array_rev.append((item_arr[1], item_arr[0]))
+        self.all_companies_dict = dict(all_companies_array)
+        self.all_companies_dict_rev = dict(all_companies_array_rev)
+
+    def getCikByCompanyName(self, name):
+        return self.all_companies_dict[name]
+
+    def getCompanyNameByCik(self, cik):
+        return self.all_companies_dict_rev[cik]
+
+
 def getRequest(href):
     page = requests.get(href)
     return html.fromstring(page.content)
@@ -42,6 +66,9 @@ def getCIKFromCompany(companyName):
     for elem in tree.xpath('//*[@id="seriesDiv"]/table/tr[*]/td[2]'):
         namesList.append(elem.text_content())
     return list(zip(CIKList, namesList))
+
+
+
 
 
 def test():
