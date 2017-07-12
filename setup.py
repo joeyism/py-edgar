@@ -7,7 +7,7 @@ setup(
         author = 'Joey Sham',
         author_email = 'sham.joey@gmail.com',
         url = 'https://github.com/joeyism/py-edgar', # use the URL to the github repo
-        download_url = 'https://github.com/joeyism/py-edgar/archive/0.1.tar.gz',
+        download_url = 'https://github.com/joeyism/py-edgar/archive/0.2.0.tar.gz',
         keywords = ['edgar', 'sec'], 
         classifiers = [],
         )
