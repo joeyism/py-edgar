@@ -39,6 +39,15 @@ class Edgar():
     def getCompanyNameByCik(self, cik):
         return self.all_companies_dict_rev[cik]
 
+    def findCompanyName(self, words):
+        possibleCompanies = []
+        words = words.lower()
+        for company in self.all_companies_dict:
+            if all(word in company.lower() for word in words.split(" ")):
+                possibleCompanies.append(company)
+        return possibleCompanies
+        
+
 
 def getRequest(href):
     page = requests.get(href)
