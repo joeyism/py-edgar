@@ -1,4 +1,5 @@
-from distutils.core import setup
+from setuptools import setup, find_packages
+from codecs import open
 from os import path
 import re
 
@@ -10,11 +11,15 @@ version = re.search(
     re.M
     ).group(1)
 
+with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
+    long_description = f.read()
+
 setup(
         name = 'edgar',
         packages = ['edgar'], # this must be the same as the name above
         version = version,
         description = 'Scrape data from SEC\'s EDGAR',
+        long_description = long_description,
         author = 'Joey Sham',
         author_email = 'sham.joey@gmail.com',
         url = 'https://github.com/joeyism/py-edgar', # use the URL to the github repo
