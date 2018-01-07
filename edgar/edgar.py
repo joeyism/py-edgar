@@ -19,8 +19,8 @@ class Company():
 class Edgar():
 
     def __init__(self):
-        all_companies_page = requests.get("https://www.sec.gov/edgar/NYU/cik.coleft.c")
-        all_companies_content = all_companies_page.content
+        all_companies_page = requests.get("https://www.sec.gov/Archives/edgar/cik-lookup-data.txt")
+        all_companies_content = all_companies_page.content.decode("latin1")
         all_companies_array = all_companies_content.split("\n")
         del all_companies_array[-1]
         all_companies_array_rev = []
