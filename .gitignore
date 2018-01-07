@@ -2,3 +2,5 @@
 *.swp
 .git
 dist
+build
+edgar.egg-info/
