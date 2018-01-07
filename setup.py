@@ -1,4 +1,5 @@
 from distutils.core import setup
+from os import path
 import re
 
 here = path.abspath(path.dirname(__file__))
