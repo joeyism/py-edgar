@@ -53,20 +53,30 @@ def getRequest(href):
     page = requests.get(href)
     return html.fromstring(page.content)
 
-def getDocuments(tree, noOfDocuments=1):
+
+def getDocuments(tree, sub_document=None, noOfDocuments=1):
     baseurl = "https://www.sec.gov"
     elems = tree.xpath('//*[@id="documentsbutton"]')[:noOfDocuments]
     result = []
     for elem in elems:
         url = baseurl + elem.attrib["href"]
         contentPage = getRequest(url)
-        url = baseurl + contentPage.xpath('//*[@id="formDiv"]/div/table/tr[2]/td[3]/a')[0].attrib["href"]
+        sub_doc_xpath = _get_sub_document_xpath(sub_document)
+        url = baseurl + contentPage.xpath(sub_doc_xpath)[0].attrib["href"]
         filing = getRequest(url)
         result.append(filing.body.text_content())
 
     if len(result) == 1:
         return result[0]
     return result
+
+
+def _get_sub_document_xpath(sub_document=None):
+    if sub_document is None:
+        return '//*[@id="formDiv"]/div/table/tr[2]/td[3]/a'
+
+    return '//*[@id="formDiv"]/div/table/tr[td[4]/text()="{sub_document}"]/td[3]/a'.format(sub_document=sub_document)
+
 
 def getCIKFromCompany(companyName):
     tree = getRequest("https://www.sec.gov/cgi-bin/browse-edgar?company=" + companyName)
