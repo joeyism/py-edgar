@@ -51,15 +51,19 @@ class Edgar():
         
 
 class Filing:
+    main_xpath = '//*[@id="formDiv"]/div/table/tr[2]/td[3]/a'
 
     def __init__(self, elem):
         self.url = BASE_URL + elem.attrib["href"]
         self.elem = getRequest(self.url)
 
     @property
+    def text_content(self):
+        return self._get_text_content_by_link_xpath(self.main_xpath)
+
+    @property
     def content(self):
-        xpath = '//*[@id="formDiv"]/div/table/tr[2]/td[3]/a'
-        return self._get_content_by_link_xpath(xpath)
+        return self._get_html_by_link_xpath(self.main_xpath)
 
     @property
     def filing_date(self):
@@ -73,16 +77,26 @@ class Filing:
     def period_of_report(self):
         return self._get_filing_info('Period of Report')
 
-    def sub_filing(self, sub_document):
+    def sub_filing(self, sub_document, as_html = False):
         xpath = '//*[@id="formDiv"]/div/table/tr[td[4]/text()="{sub_document}"]/td[3]/a'.format(
             sub_document=sub_document
         )
-        return self._get_content_by_link_xpath(xpath)
+        if as_html:
+            return self._get_html_by_link_xpath(xpath)
+        return self._get_text_content_by_link_xpath(xpath)
 
     def _get_content_by_link_xpath(self, xpath):
         url = BASE_URL + self.elem.xpath(xpath)[0].attrib["href"]
         content = getRequest(url)
+        return content
+
+    def _get_text_content_by_link_xpath(self, xpath):
+        content = self._get_content_by_link_xpath(xpath)
         return content.body.text_content()
+
+    def _get_html_by_link_xpath(self, xpath):
+        content = self._get_content_by_link_xpath(xpath)
+        return html.tostring(content).decode('utf8')
 
     def _get_filing_info(self, info_str):
         info_xpath = '//*[@id="formDiv"]//div[@class="formGrouping"]/div[preceding-sibling::div[1]/' \
@@ -95,12 +109,16 @@ def getRequest(href):
     return html.fromstring(page.content)
 
 
-def getDocuments(tree, sub_document=None, noOfDocuments=1):
+def getDocuments(tree, sub_document=None, noOfDocuments=1, as_html=False):
     filings = getFilings(tree, noOfDocuments=noOfDocuments)
     if sub_document is None:
-        result = [filing.content for filing in filings]
+        if as_html:
+            attr = 'content'
+        else:
+            attr = 'text_content'
+        result = [getattr(filing, attr) for filing in filings]
     else:
-        result = [filing.sub_filing(sub_document) for filing in filings]
+        result = [filing.sub_filing(sub_document, as_html=as_html) for filing in filings]
 
     if len(result) == 1:
         return result[0]
