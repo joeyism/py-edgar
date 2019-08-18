@@ -1,6 +1,8 @@
 from lxml import html
 import requests
 
+BASE_URL = "https://www.sec.gov"
+
 class Company():
 
     def __init__(self, name, cik):
@@ -48,6 +50,45 @@ class Edgar():
         return possibleCompanies
         
 
+class Filing:
+
+    def __init__(self, elem):
+        self.url = BASE_URL + elem.attrib["href"]
+        self.elem = getRequest(self.url)
+
+    @property
+    def content(self):
+        xpath = '//*[@id="formDiv"]/div/table/tr[2]/td[3]/a'
+        return self._get_content_by_link_xpath(xpath)
+
+    @property
+    def filing_date(self):
+        return self._get_filing_info('Filing Date')
+
+    @property
+    def accepted(self):
+        return self._get_filing_info('Accepted')
+
+    @property
+    def period_of_report(self):
+        return self._get_filing_info('Period of Report')
+
+    def sub_filing(self, sub_document):
+        xpath = '//*[@id="formDiv"]/div/table/tr[td[4]/text()="{sub_document}"]/td[3]/a'.format(
+            sub_document=sub_document
+        )
+        return self._get_content_by_link_xpath(xpath)
+
+    def _get_content_by_link_xpath(self, xpath):
+        url = BASE_URL + self.elem.xpath(xpath)[0].attrib["href"]
+        content = getRequest(url)
+        return content.body.text_content()
+
+    def _get_filing_info(self, info_str):
+        info_xpath = '//*[@id="formDiv"]//div[@class="formGrouping"]/div[preceding-sibling::div[1]/' \
+                     'text()="{info_str}"]/text()'.format(info_str=info_str)
+        return self.elem.xpath(info_xpath)[0]
+
 
 def getRequest(href):
     page = requests.get(href)
@@ -55,20 +96,20 @@ def getRequest(href):
 
 
 def getDocuments(tree, sub_document=None, noOfDocuments=1):
-    baseurl = "https://www.sec.gov"
-    elems = tree.xpath('//*[@id="documentsbutton"]')[:noOfDocuments]
-    result = []
-    for elem in elems:
-        url = baseurl + elem.attrib["href"]
-        contentPage = getRequest(url)
-        sub_doc_xpath = _get_sub_document_xpath(sub_document)
-        url = baseurl + contentPage.xpath(sub_doc_xpath)[0].attrib["href"]
-        filing = getRequest(url)
-        result.append(filing.body.text_content())
+    filings = getFilings(tree, noOfDocuments=noOfDocuments)
+    if sub_document is None:
+        result = [filing.content for filing in filings]
+    else:
+        result = [filing.sub_filing(sub_document) for filing in filings]
 
     if len(result) == 1:
         return result[0]
     return result
+
+
+def getFilings(tree, noOfDocuments=1):
+    elems = tree.xpath('//*[@id="documentsbutton"]')[:noOfDocuments]
+    return [Filing(elem) for elem in elems]
 
 
 def _get_sub_document_xpath(sub_document=None):
