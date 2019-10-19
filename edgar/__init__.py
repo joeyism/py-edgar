@@ -1,8 +1,8 @@
 from os.path import dirname, basename, isfile
 import glob
-from edgar.edgar import Edgar
-from edgar.utils.txtml import TXTML
-from edgar.company import Company
+from .edgar import Edgar
+from .utils.txtml import TXTML
+from .company import Company
 
 __version__ = "2.0.1"
 

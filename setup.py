@@ -27,4 +27,5 @@ setup(
         keywords = ['edgar', 'sec'], 
         install_requires = ['requests', 'lxml'],
         classifiers = [],
+        packages=find_packages()
         )
