@@ -11,17 +11,25 @@ A small library to access files from SEC's edgar.
 To get a company's latest 5 10-Ks, run
 
 ``` python
-import edgar
-company = edgar.Company("Oracle Corp", "0001341439")
+from edgar import Company
+company = Company("Oracle Corp", "0001341439")
 tree = company.getAllFilings(filingType = "10-K")
 docs = edgar.getDocuments(tree, noOfDocuments=5)
+```
+or
+```python
+from edgar import Company, TXTML
+
+company = Company("INTERNATIONAL BUSINESS MACHINES CORP", "0000051143")
+doc = company.get10K()
+text = TXTML.parseFull10K(doc)
 ```
 
 To get all companies and find a specific one, run
 
 ``` python
-import edgar
-edgar = edgar.Edgar()
+from edgar import Edgar
+edgar = Edgar()
 possible_companies = edgar.findCompanyName("Cisco System")
 ```
 
