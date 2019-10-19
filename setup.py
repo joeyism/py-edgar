@@ -16,7 +16,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 setup(
         name = 'edgar',
-        packages = find_packages, # this must be the same as the name above
+        packages = find_packages(), # this must be the same as the name above
         version = version,
         description = 'Scrape data from SEC\'s EDGAR',
         long_description = long_description,
