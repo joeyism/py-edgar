@@ -18,21 +18,21 @@ class Edgar():
         self.all_companies_dict = dict(all_companies_array)
         self.all_companies_dict_rev = dict(all_companies_array_rev)
 
-    def getCikByCompanyName(self, name):
+    def get_cik_by_company_name(self, name):
         return self.all_companies_dict[name]
 
-    def getCompanyNameByCik(self, cik):
+    def get_company_name_by_cik(self, cik):
         return self.all_companies_dict_rev[cik]
 
-    def findCompanyName(self, words):
-        possibleCompanies = []
+    def find_company_name(self, words):
+        possible_companies = []
         words = words.lower()
         for company in self.all_companies_dict:
             if all(word in company.lower() for word in words.split(" ")):
-                possibleCompanies.append(company)
-        return possibleCompanies
+                possible_companies.append(company)
+        return possible_companies
         
 def test():
     com = Company("Oracle Corp", "0001341439")
-    tree = com.getAllFilings(filingType = "10-K")
-    return getDocuments(tree)
+    tree = com.get_all_filings(filingType = "10-K")
+    return get_documents(tree)

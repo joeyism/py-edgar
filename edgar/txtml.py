@@ -5,11 +5,11 @@ class TXTML:
     return text.replace('\n', '')
 
   @classmethod
-  def getDocumentType(cls, document):
+  def get_document_type(cls, document):
     return document.getchildren()[0].text
 
   @classmethod
-  def getHTMLFromDocument(cls, document):
+  def get_HTML_from_document(cls, document):
     properties = {}
 
     while document.tag != 'text':
@@ -19,12 +19,12 @@ class TXTML:
     return document, properties
 
   @classmethod
-  def parseFull10K(cls, doc):
+  def parse_full_10K(cls, doc):
     text = ""
     for child in doc.getchildren():
       if child.tag == 'sec-header':
           continue
-      html, properties = TXTML.getHTMLFromDocument(child)
+      html, properties = TXTML.get_HTML_from_document(child)
       if properties['type'] == '10-K':
         text = text + html.text_content()
     return text
