@@ -18,6 +18,22 @@ class Company():
         page = requests.get(url)
         return html.fromstring(page.content)
 
+    def get_document_type_from_10K(self, document_type, no_of_documents=1):
+      tree = self.get_all_filings(filing_type="10-K")
+      elems = tree.xpath('//*[@id="documentsbutton"]')[:no_of_documents]
+      result = []
+      for elem in elems:
+          url = BASE_URL + elem.attrib["href"]
+          content_page = get_request(url)
+          table = content_page.find_class("tableFile")[0]
+          for row in table.getchildren():
+              if row.getchildren()[3].text == document_type:
+                  href = row.getchildren()[2].getchildren()[0].attrib["href"]
+                  href = BASE_URL + href
+                  doc = get_request(href)
+                  result.append(doc)
+      return result
+
     def get_10Ks(self, no_of_documents=1):
       tree = self.get_all_filings(filing_type="10-K")
       elems = tree.xpath('//*[@id="documentsbutton"]')[:no_of_documents]
