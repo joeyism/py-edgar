@@ -14,24 +14,38 @@ class Company():
         return url
 
     def get_all_filings(self, filing_type="", prior_to="", ownership="include", no_of_entries=100):
-        url = self._get_filings_url(filing_type, prior_to, ownership, no_of_entries)
-        page = requests.get(url)
-        return html.fromstring(page.content)
+      url = self._get_filings_url(filing_type, prior_to, ownership, no_of_entries)
+      page = requests.get(url)
+      return html.fromstring(page.content)
+
+    def _group_document_type(self, tree, document_type):
+      result = []
+      grouped = []
+      for i, elem in enumerate(tree.xpath('//*[@id="seriesDiv"]/table/tr')):
+        if i == 0:
+          continue
+        url = elem.xpath("td")[1].getchildren()[0].attrib["href"]
+        grouped.append(url)
+        if elem.xpath("td")[0].text == document_type:
+          result.append(grouped)
+          grouped = []
+      return result
 
     def get_document_type_from_10K(self, document_type, no_of_documents=1):
       tree = self.get_all_filings(filing_type="10-K")
-      elems = tree.xpath('//*[@id="documentsbutton"]')[:no_of_documents]
+      url_groups = self._group_document_type(tree, "10-K")[:no_of_documents]
       result = []
-      for elem in elems:
-          url = BASE_URL + elem.attrib["href"]
+      for url_group in url_groups:
+        for url in url_group:
+          url = BASE_URL + url
           content_page = get_request(url)
           table = content_page.find_class("tableFile")[0]
           for row in table.getchildren():
-              if row.getchildren()[3].text == document_type:
-                  href = row.getchildren()[2].getchildren()[0].attrib["href"]
-                  href = BASE_URL + href
-                  doc = get_request(href)
-                  result.append(doc)
+            if document_type in row.getchildren()[3].text:
+              href = row.getchildren()[2].getchildren()[0].attrib["href"]
+              href = BASE_URL + href
+              doc = get_request(href)
+              result.append(doc)
       return result
 
     def get_10Ks(self, no_of_documents=1):
