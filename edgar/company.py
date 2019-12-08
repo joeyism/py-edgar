@@ -8,9 +8,18 @@ class Company():
     def __init__(self, name, cik):
         self.name = name
         self.cik = cik
+        self.url = f"https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK={cik}"
+        self._get_company_info()
+
+    def _get_company_info(self):
+        page = html.fromstring(requests.get(self.url).content)
+        companyInfo = page.xpath("//div[@class='companyInfo']")[0]
+        indentInfo = companyInfo.getchildren()[1]
+        self.sic = indentInfo.getchildren()[1].text
+        self.us_state = indentInfo.getchildren()[3].text
 
     def _get_filings_url(self, filing_type="", prior_to="", ownership="include", no_of_entries=100):
-        url = "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=" + self.cik + "&type=" + filing_type + "&dateb=" + prior_to + "&owner=" +  ownership + "&count=" + str(no_of_entries)
+        url = self.url + "&type=" + filing_type + "&dateb=" + prior_to + "&owner=" +  ownership + "&count=" + str(no_of_entries)
         return url
 
     def get_all_filings(self, filing_type="", prior_to="", ownership="include", no_of_entries=100):
