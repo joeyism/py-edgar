@@ -80,7 +80,7 @@ def get_documents(tree, no_of_documents=1):
         content_page = get_request(url)
         url = BASE_URL + content_page.xpath('//*[@id="formDiv"]/div/table/tr[2]/td[3]/a')[0].attrib["href"]
         filing = get_request(url)
-        result.append(filing.body.text_content())
+        result.append(filing)
 
     if len(result) == 1:
         return result[0]
