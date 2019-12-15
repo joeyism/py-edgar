@@ -65,7 +65,10 @@ class Company():
         for url in url_group:
           url = BASE_URL + url
           content_page = get_request(url)
-          table = content_page.find_class("tableFile")[1]
+          tableFile = content_page.find_class("tableFile")
+          if len(tableFile) < 2:
+            continue
+          table = tableFile[1]
           for row in table.getchildren():
             if document_type in row.getchildren()[3].text:
               href = row.getchildren()[2].getchildren()[0].attrib["href"]
