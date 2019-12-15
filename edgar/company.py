@@ -14,7 +14,7 @@ class Company():
     def _get_company_info(self):
         page = html.fromstring(requests.get(self.url).content)
         companyInfo = page.xpath("//div[@class='companyInfo']")[0] if page.xpath("//div[@class='companyInfo']") else None
-        if companyInfo:
+        if companyInfo is not None:
           indentInfo = companyInfo.getchildren()[1]
           self.sic = indentInfo.getchildren()[1].text if len(indentInfo.getchildren()) > 2 else ""
           self.us_state = indentInfo.getchildren()[3].text if len(indentInfo.getchildren()) > 4 else ""
