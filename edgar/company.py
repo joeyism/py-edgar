@@ -15,8 +15,8 @@ class Company():
         page = html.fromstring(requests.get(self.url).content)
         companyInfo = page.xpath("//div[@class='companyInfo']")[0]
         indentInfo = companyInfo.getchildren()[1]
-        self.sic = indentInfo.getchildren()[1].text
-        self.us_state = indentInfo.getchildren()[3].text
+        self.sic = indentInfo.getchildren()[1].text if len(indentInfo.getchildren()) > 2 else ""
+        self.us_state = indentInfo.getchildren()[3].text if len(indentInfo.getchildren()) > 4 else ""
 
     def _get_filings_url(self, filing_type="", prior_to="", ownership="include", no_of_entries=100):
         url = self.url + "&type=" + filing_type + "&dateb=" + prior_to + "&owner=" +  ownership + "&count=" + str(no_of_entries)
