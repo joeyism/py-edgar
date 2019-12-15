@@ -83,7 +83,7 @@ class XBRLElement(etree.ElementBase):
 
   @property
   def value(self) -> str:
-    return self.child.text.replace("\n", "").strip()
+    return self.child.text.replace("\n", "").strip() if self.child.text else ""
 
   def to_dict(self) -> Dict:
     return {
