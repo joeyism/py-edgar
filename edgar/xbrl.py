@@ -4,7 +4,7 @@ from datetime import datetime
 from lxml import etree
 
 class XBRL(etree.ElementBase):
-  CONTEXT_REF_NOT_DATE = ["us-gaap", "srt", "dei"]
+  CONTEXT_REF_NOT_DATE = ["us-gaap", "srt", "dei", "mmm"]
 
   @classmethod
   def clean_tag(cls, elem):
