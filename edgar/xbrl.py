@@ -36,7 +36,7 @@ class XBRL(etree.ElementBase):
         return {"from": from_date, "to": to_date}
       else:
         from_date = context_ref_to_date_text(context_ref[len("DURATION")+1:context_ref.find("_To_")])
-        end_idx = min([context_ref.find(val) for val in cls.CONTEXT_REF_NOT_DATE if context_ref.find(val) > -1] + [findnth(context_ref, "_", 8)])
+        end_idx = min([context_ref.find(val) for val in cls.CONTEXT_REF_NOT_DATE if context_ref.find(val) > -1] + [findnth(context_ref, "_", 8)+1])
         to_date = context_ref_to_date_text(context_ref[context_ref.find("_To_")+4:end_idx-1])
         return {"from": from_date, "to": to_date}
 
@@ -44,7 +44,7 @@ class XBRL(etree.ElementBase):
       if not any([val in context_ref for val in cls.CONTEXT_REF_NOT_DATE]) or len(context_ref.split("_")) <= 5:
         return {"from": context_ref_to_date_text(context_ref[len("As_Of")+1:])}
       else:
-        end_idx = min([context_ref.find(val) for val in cls.CONTEXT_REF_NOT_DATE if context_ref.find(val) > -1] + [findnth(context_ref, "_", 4)])
+        end_idx = min([context_ref.find(val) for val in cls.CONTEXT_REF_NOT_DATE if context_ref.find(val) > -1] + [findnth(context_ref, "_", 4)+1])
         from_date = context_ref_to_date_text(context_ref[len("As_Of")+1:end_idx-1])
         return {"from": from_date}
 
