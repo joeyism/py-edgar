@@ -1,5 +1,5 @@
 import requests
-from lxml import html
+from lxml import html, etree
 
 BASE_URL = "https://www.sec.gov"
 
@@ -57,6 +57,23 @@ class Company():
               result.append(doc)
       return result
 
+    def get_data_files_from_10K(self, document_type, no_of_documents=1, isxml=False):
+      tree = self.get_all_filings(filing_type="10-K")
+      url_groups = self._group_document_type(tree, "10-K")[:no_of_documents]
+      result = []
+      for url_group in url_groups:
+        for url in url_group:
+          url = BASE_URL + url
+          content_page = get_request(url)
+          table = content_page.find_class("tableFile")[1]
+          for row in table.getchildren():
+            if document_type in row.getchildren()[3].text:
+              href = row.getchildren()[2].getchildren()[0].attrib["href"]
+              href = BASE_URL + href
+              doc = get_request(href, isxml=isxml)
+              result.append(doc)
+      return result
+
     def get_10Ks(self, no_of_documents=1):
       tree = self.get_all_filings(filing_type="10-K")
       elems = tree.xpath('//*[@id="documentsbutton"]')[:no_of_documents]
@@ -76,9 +93,12 @@ class Company():
       return self.get_10Ks(no_of_documents=1)[0]
 
 
-def get_request(href):
+def get_request(href, isxml=False):
     page = requests.get(href)
-    return html.fromstring(page.content)
+    if isxml:
+      return etree.fromstring(page.content)
+    else:
+      return html.fromstring(page.content)
 
 def get_documents(tree, no_of_documents=1):
     BASE_URL = "https://www.sec.gov"

@@ -1,3 +1,6 @@
+from lxml.etree import tostring
+import html
+
 class TXTML:
 
   @classmethod
@@ -28,3 +31,7 @@ class TXTML:
       if properties['type'] == '10-K':
         text = text + html.text_content()
     return text
+
+  @classmethod
+  def to_xml(cls, doc):
+    return html.unescape(tostring(doc).decode("utf8"))
