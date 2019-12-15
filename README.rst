@@ -42,6 +42,17 @@ To get all companies and find a specific one, run
    edgar = Edgar()
    possible_companies = edgar.find_company_name("Cisco System")
 
+To get XBRL data, run
+
+.. code-block:: python
+
+   from edgar import Company, XBRL, XBRLElement
+
+   company = Company("Oracle Corp", "0001341439")
+   results = company.get_data_files_from_10K("EX-101.INS", isxml=True)
+   xbrl = XBRL(results[0])
+   XBRLElement(xbrl.relevant_children_parsed[15]).to_dict() // returns a dictionary of name, value, and schemaRef
+
 API
 ---
 
@@ -79,6 +90,39 @@ Returns the HTML in the form of `lxml.html <http://lxml.de/lxmlhtml.html>`_
   * prior_to: Time prior which documents are to be retrieved. If not specified, it'll return all documents
   * ownership: defaults to include. Options are include, exclude, only.
   * no_of_entries: defaults to 100. Returns the number of entries to be returned. Maximum is 100.
+
+get_10Ks
+""""""""
+
+Returns the HTML in the form of `lxml.html <http://lxml.de/lxmlhtml.html>`_ of concatenation of all the documents in the 10-K
+
+
+* **Input**
+
+  * no_of_documents (default: 1): numer of documents to be retrieved
+
+get_document_type_from_10K
+""""""""""""""""""""""""""
+
+Returns the HTML in the form of `lxml.html <http://lxml.de/lxmlhtml.html>`_ of the document within 10-K
+
+
+* **Input**
+
+  * document_type: Tye type of document you want, i.e. 10-K, EX-3.2
+  * no_of_documents (default: 1): numer of documents to be retrieved
+
+get_data_files_from_10K
+"""""""""""""""""""""""
+
+Returns the HTML in the form of `lxml.html <http://lxml.de/lxmlhtml.html>`_ of the data file within 10-K
+
+
+* **Input**
+
+  * document_type: Tye type of document you want, i.e. EX-101.INS
+  * no_of_documents (default: 1): numer of documents to be retrieved
+  * isxml (default: False): by default, things aren't case sensitive and is parsed with ``html`` in ``lxml. If this is True, then it is parsed with``\ etree` which is case sensitive
 
 Edgar
 ^^^^^
@@ -119,3 +163,18 @@ Returns a list of strings, each string contains the body of the specified docume
 
   * tree: lxml.html form that is returned from Company.getAllFilings
   * no_of_documents: number of document returned. If it is 1, the returned result is just one string, instead of a list of strings. Defaults to 1.
+
+XBRL
+^^^^
+
+Parses data from XBRL
+
+
+* ``relevant_children``
+
+  * get children that are not ``context``
+
+* ``relevant_children_parsed``
+
+  * get children that are not ``context``\ , ``unit``\ , ``schemaRef``
+  * cleans tags
