@@ -98,7 +98,7 @@ class Company():
 
 
 def get_request(href, isxml=False):
-    page = requests.get(href)
+    page = requests.get(href, timeout=10)
     if isxml:
       return etree.fromstring(page.content)
     else:
