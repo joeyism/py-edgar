@@ -10,7 +10,6 @@ def findnth(haystack, needle, n):
   return len(haystack)-len(parts[-1])-len(needle)
 
 class XBRL(etree.ElementBase):
-  CONTEXT_REF_NOT_DATE = ["us-gaap", "srt", "dei", "mmm", "ncso"]
 
   @classmethod
   def clean_tag(cls, elem):
@@ -30,18 +29,18 @@ class XBRL(etree.ElementBase):
     """
     context_ref_to_date_text = lambda s: datetime.strptime(s, "%m_%d_%Y").date().strftime("%Y-%m-%d")
     if context_ref.startswith("Duration"):
-      if not any([val in context_ref for val in cls.CONTEXT_REF_NOT_DATE]) or len(context_ref.split("_")) <= 9:
+      if len(context_ref.split("_")) <= 9:
         from_date = context_ref_to_date_text(context_ref[len("DURATION")+1:context_ref.find("_To_")])
         to_date = context_ref_to_date_text(context_ref[context_ref.find("_To_")+4:])
         return {"from": from_date, "to": to_date}
       else:
         from_date = context_ref_to_date_text(context_ref[len("DURATION")+1:context_ref.find("_To_")])
-        end_idx = min([context_ref.find(val) for val in cls.CONTEXT_REF_NOT_DATE if context_ref.find(val) > -1] + [findnth(context_ref, "_", 8)+1])
+        end_idx = min([context_ref.find(val) for val in cls.CONTEXT_REF_NOT_DATE if context_ref.find(val) > -1] + [findnth(context_ref, "_", 7)+1])
         to_date = context_ref_to_date_text(context_ref[context_ref.find("_To_")+4:end_idx-1])
         return {"from": from_date, "to": to_date}
 
     elif context_ref.startswith("As_Of"):
-      if not any([val in context_ref for val in cls.CONTEXT_REF_NOT_DATE]) or len(context_ref.split("_")) <= 5:
+      if len(context_ref.split("_")) <= 5:
         return {"from": context_ref_to_date_text(context_ref[len("As_Of")+1:])}
       else:
         end_idx = min([context_ref.find(val) for val in cls.CONTEXT_REF_NOT_DATE if context_ref.find(val) > -1] + [findnth(context_ref, "_", 4)+1])
