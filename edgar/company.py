@@ -100,7 +100,8 @@ class Company():
 def get_request(href, isxml=False):
     page = requests.get(href, timeout=10)
     if isxml:
-      return etree.fromstring(page.content)
+      p = etree.XMLParser(huge_tree=True)
+      return etree.fromstring(page.content, parser=p)
     else:
       return html.fromstring(page.content)
 
