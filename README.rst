@@ -22,7 +22,7 @@ To get a company's latest 5 10-Ks, run
    from edgar import Company
    company = Company("Oracle Corp", "0001341439")
    tree = company.get_all_filings(filing_type = "10-K")
-   docs = edgar.get_documents(tree, no_of_documents=5)
+   docs = Company.get_documents(tree, no_of_documents=5)
 
 or
 
@@ -124,6 +124,18 @@ Returns the HTML in the form of `lxml.html <http://lxml.de/lxmlhtml.html>`_ of t
   * no_of_documents (default: 1): numer of documents to be retrieved
   * isxml (default: False): by default, things aren't case sensitive and is parsed with ``html`` in ``lxml. If this is True, then it is parsed with``\ etree` which is case sensitive
 
+get_documents (class method)
+""""""""""""""""""""""""""""
+
+Returns a list of strings, each string contains the body of the specified document from input
+
+
+* **Input**
+
+  * tree: lxml.html form that is returned from Company.getAllFilings
+  * no_of_documents: number of document returned. If it is 1, the returned result is just one string, instead of a list of strings. Defaults to 1.
+  * debug (default: **False**\ ): if **True**\ , displays the URL and form
+
 Edgar
 ^^^^^
 
@@ -152,17 +164,6 @@ find_company_name
 * **Input**
 
   * words: input words to search the company
-
-get_documents
-^^^^^^^^^^^^^
-
-Returns a list of strings, each string contains the body of the specified document from input
-
-
-* **Input**
-
-  * tree: lxml.html form that is returned from Company.getAllFilings
-  * no_of_documents: number of document returned. If it is 1, the returned result is just one string, instead of a list of strings. Defaults to 1.
 
 XBRL
 ^^^^
