@@ -10,6 +10,8 @@ class Company():
         self.cik = cik
         self.url = f"https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK={cik}"
         self._get_company_info()
+        self.document_urls = []
+        self.data_urls = []
 
     def _get_company_info(self):
         page = html.fromstring(requests.get(self.url).content)
@@ -48,6 +50,7 @@ class Company():
       for url_group in url_groups:
         for url in url_group:
           url = BASE_URL + url
+          self.document_urls.append(url)
           content_page = Company.get_request(url)
           table = content_page.find_class("tableFile")[0]
           for row in table.getchildren():
@@ -65,6 +68,7 @@ class Company():
       for url_group in url_groups:
         for url in url_group:
           url = BASE_URL + url
+          self.data_urls.append(url)
           content_page = Company.get_request(url)
           tableFile = content_page.find_class("tableFile")
           if len(tableFile) < 2:
