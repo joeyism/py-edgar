@@ -34,5 +34,5 @@ class Edgar():
         
 def test():
     com = Company("Oracle Corp", "0001341439")
-    tree = com.get_all_filings(filingType = "10-K")
-    return get_documents(tree)
+    tree = com.get_all_filings(filingType="10-K")
+    return Company.get_documents(tree)

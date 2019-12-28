@@ -48,13 +48,13 @@ class Company():
       for url_group in url_groups:
         for url in url_group:
           url = BASE_URL + url
-          content_page = get_request(url)
+          content_page = Company.get_request(url)
           table = content_page.find_class("tableFile")[0]
           for row in table.getchildren():
             if document_type in row.getchildren()[3].text:
               href = row.getchildren()[2].getchildren()[0].attrib["href"]
               href = BASE_URL + href
-              doc = get_request(href)
+              doc = Company.get_request(href)
               result.append(doc)
       return result
 
@@ -65,7 +65,7 @@ class Company():
       for url_group in url_groups:
         for url in url_group:
           url = BASE_URL + url
-          content_page = get_request(url)
+          content_page = Company.get_request(url)
           tableFile = content_page.find_class("tableFile")
           if len(tableFile) < 2:
             continue
@@ -74,7 +74,7 @@ class Company():
             if document_type in row.getchildren()[3].text:
               href = row.getchildren()[2].getchildren()[0].attrib["href"]
               href = BASE_URL + href
-              doc = get_request(href, isxml=isxml)
+              doc = Company.get_request(href, isxml=isxml)
               result.append(doc)
       return result
 
@@ -84,46 +84,51 @@ class Company():
       result = []
       for elem in elems:
           url = BASE_URL + elem.attrib["href"]
-          content_page = get_request(url)
+          content_page = Company.get_request(url)
           table = content_page.find_class("tableFile")[0]
           last_row = table.getchildren()[-1]
           href = last_row.getchildren()[2].getchildren()[0].attrib["href"]
           href = BASE_URL + href
-          doc = get_request(href)
+          doc = Company.get_request(href)
           result.append(doc)
       return result
 
     def get_10K(self):
       return self.get_10Ks(no_of_documents=1)[0]
 
+    @classmethod
+    def get_request(cls, href, isxml=False):
+        page = requests.get(href, timeout=10)
+        if isxml:
+          p = etree.XMLParser(huge_tree=True)
+          return etree.fromstring(page.content, parser=p)
+        else:
+          return html.fromstring(page.content)
 
-def get_request(href, isxml=False):
-    page = requests.get(href, timeout=10)
-    if isxml:
-      p = etree.XMLParser(huge_tree=True)
-      return etree.fromstring(page.content, parser=p)
-    else:
-      return html.fromstring(page.content)
+    @classmethod
+    def get_documents(cls, tree, no_of_documents=1, debug=False):
+        BASE_URL = "https://www.sec.gov"
+        elems = tree.xpath('//*[@id="documentsbutton"]')[:no_of_documents]
+        result = []
+        for elem in elems:
+            url = BASE_URL + elem.attrib["href"]
+            content_page = cls.get_request(url)
+            if debug:
+              print("URL:", url)
+              print("FORM:", content_page.find_class("formContent")[0].text_content())
+            url = BASE_URL + content_page.xpath('//*[@id="formDiv"]/div/table/tr[2]/td[3]/a')[0].attrib["href"]
+            filing = cls.get_request(url)
+            result.append(filing)
 
-def get_documents(tree, no_of_documents=1):
-    BASE_URL = "https://www.sec.gov"
-    elems = tree.xpath('//*[@id="documentsbutton"]')[:no_of_documents]
-    result = []
-    for elem in elems:
-        url = BASE_URL + elem.attrib["href"]
-        content_page = get_request(url)
-        url = BASE_URL + content_page.xpath('//*[@id="formDiv"]/div/table/tr[2]/td[3]/a')[0].attrib["href"]
-        filing = get_request(url)
-        result.append(filing)
+        if len(result) == 1:
+            return result[0]
+        return result
 
-    if len(result) == 1:
-        return result[0]
-    return result
-
-def get_CIK_from_company(company_name):
-    tree = get_request("https://www.sec.gov/cgi-bin/browse-edgar?company=" + company_name)
-    CIKList = tree.xpath('//*[@id="seriesDiv"]/table/tr[*]/td[1]/a/text()')
-    names_list = []
-    for elem in tree.xpath('//*[@id="seriesDiv"]/table/tr[*]/td[2]'):
-        names_list.append(elem.text_content())
-    return list(zip(CIKList, namesList))
+    @classmethod
+    def get_CIK_from_company(cls, company_name):
+        tree = cls.get_request("https://www.sec.gov/cgi-bin/browse-edgar?company=" + company_name)
+        CIKList = tree.xpath('//*[@id="seriesDiv"]/table/tr[*]/td[1]/a/text()')
+        names_list = []
+        for elem in tree.xpath('//*[@id="seriesDiv"]/table/tr[*]/td[2]'):
+            names_list.append(elem.text_content())
+        return list(zip(CIKList, namesList))
