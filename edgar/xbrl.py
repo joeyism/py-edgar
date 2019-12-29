@@ -11,6 +11,15 @@ def findnth(haystack, needle, n):
 
 class XBRL(etree.ElementBase):
 
+  def __init__(self, *children, attrib=None, nsmap=None, **_extra):
+    super().__init__(*children, attrib=None, nsmap=None, **_extra)
+    self.relevant_children = [child for child in self.child.getchildren() if not isinstance(child, etree._Comment) and "context" not in child.tag]
+    children = [child for child in self.child.getchildren() if not isinstance(child, etree._Comment) and "context" not in child.tag and "unit" not in child.tag and "schemaRef" not in child.tag]
+    for elem in children:
+      XBRL.clean_tag(elem)
+    self.relevant_children_parsed = children
+    self.relevant_children_elements = [XBRLElement(child) for child in children]
+
   @classmethod
   def clean_tag(cls, elem):
     """
@@ -53,40 +62,24 @@ class XBRL(etree.ElementBase):
   def child(self):
     return self.getchildren()[0]
 
-  @property
-  def relevant_children(self):
-    """
-    Get children that are not `context`
-    """
-    return [child for child in self.child.getchildren() if not isinstance(child, etree._Comment) and "context" not in child.tag]
+  def find_relevant_elements_by_name(self, name):
+    return [elem for elem in self.relevant_children_elements if name in elem.name.lower()]
 
-  @property
-  def relevant_children_parsed(self):
-    """
-    Get children that are not `context`, `unit`, `schemaRef`
-    """
-    children = [child for child in self.child.getchildren() if not isinstance(child, etree._Comment) and "context" not in child.tag and "unit" not in child.tag and "schemaRef" not in child.tag]
-    for elem in children:
-      XBRL.clean_tag(elem)
-    return children
+  def match_relevant_elements_by_name(self, name):
+    return [elem for elem in self.relevant_children_elements if name == elem.name.lower()]
 
 class XBRLElement(etree.ElementBase):
 
-  @property
-  def child(self):
-    return self.getchildren()[0]
+  def __init__(self, *children, attrib=None, nsmap=None, **_extra):
+    super().__init__(*children, attrib=None, nsmap=None, **_extra)
+    self.child = self.getchildren()[0]
+    self.context_ref = XBRL.parse_context_ref(self.attrib["contextRef"]) if self.attrib.get("contextRef") else {}
+    self.name = ' '.join(re.findall('[A-Z][^A-Z]*', self.child.tag))
+    self.unit_ref = self.attrib.get("unitRef") or ""
 
   @property
   def attrib(self) -> Dict:
     return self.child.attrib
-
-  @property
-  def context_ref(self) -> Dict:
-    return XBRL.parse_context_ref(self.attrib["contextRef"]) if self.attrib.get("contextRef") else {}
-
-  @property
-  def name(self):
-    return ' '.join(re.findall('[A-Z][^A-Z]*', self.child.tag))
 
   @property
   def value(self) -> str:
@@ -98,3 +91,6 @@ class XBRLElement(etree.ElementBase):
       "value": self.value,
       "context_ref": self.context_ref
     }
+
+  def __repr__(self):
+    return f'<{self.name}="{self.value} {self.unit_ref}" context_ref={self.context_ref}>'
