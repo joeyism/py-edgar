@@ -5,19 +5,23 @@ BASE_URL = "https://www.sec.gov"
 
 class Company():
 
-    def __init__(self, name, cik):
+    def __init__(self, name, cik, timeout=10):
         self.name = name
         self.cik = cik
         self.url = f"https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK={cik}"
         self._get_company_info()
         self._document_urls = []
+        self.timeout = timeout
 
     @property
     def document_urls(self):
       return list(set(self._document_urls))
 
+    def _get(self, url):
+      return requests.get(url, timeout=self.timeout)
+
     def _get_company_info(self):
-        page = html.fromstring(requests.get(self.url).content)
+        page = html.fromstring(self._get(self.url).content)
         companyInfo = page.xpath("//div[@class='companyInfo']")[0] if page.xpath("//div[@class='companyInfo']") else None
         if companyInfo is not None:
           indentInfo = companyInfo.getchildren()[1]
@@ -30,7 +34,7 @@ class Company():
 
     def get_all_filings(self, filing_type="", prior_to="", ownership="include", no_of_entries=100):
       url = self._get_filings_url(filing_type, prior_to, ownership, no_of_entries)
-      page = requests.get(url)
+      page = self._get(url)
       return html.fromstring(page.content)
 
     def _group_document_type(self, tree, document_type):
@@ -105,7 +109,7 @@ class Company():
 
     @classmethod
     def get_request(cls, href, isxml=False):
-        page = requests.get(href, timeout=10)
+        page = self._get(href)
         if isxml:
           p = etree.XMLParser(huge_tree=True)
           return etree.fromstring(page.content, parser=p)

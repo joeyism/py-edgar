@@ -50,6 +50,7 @@ The **Company** class has two fields:
 
 * name (company name)
 * cik (company CIK number)
+* timeout (optional) (default: 10)
 
 ##### get_filings_url
 Returns a url to fetch filings data
