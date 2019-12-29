@@ -46,6 +46,8 @@ class XBRL(etree.ElementBase):
         end_idx = findnth(context_ref, "_", 4)+1
         from_date = context_ref_to_date_text(context_ref[len("As_Of")+1:end_idx-1])
         return {"from": from_date}
+    else:
+      return {"other": context_ref.split("_")[0]}
 
   @property
   def child(self):

@@ -10,6 +10,7 @@ class TestXBRL(unittest.TestCase):
       ("Duration_1_1_2018_To_12_31_2018_xxx_ABC", {"from": "2018-01-01", "to": "2018-12-31"}),
       ("As_Of_12_31_2017", {"from": "2017-12-31"}),
       ("As_Of_12_31_2017_xxx_ABC", {"from": "2017-12-31"}),
+      ("FD2019Q4YTD_us-gaap_StatementEquityComponentsAxis_us-gaap_RetainedEarningsMember", {"other": "FD2019Q4YTD"})
     ]
 
     for inp, output in input_output:
