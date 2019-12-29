@@ -89,7 +89,8 @@ class XBRLElement(etree.ElementBase):
     return {
       "name": self.name,
       "value": self.value,
-      "context_ref": self.context_ref
+      "context_ref": self.context_ref,
+      "unit_ref": self.unit_ref
     }
 
   def __repr__(self):
