@@ -9,9 +9,10 @@ class Company():
         self.name = name
         self.cik = cik
         self.url = f"https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK={cik}"
-        self._get_company_info()
-        self._document_urls = []
         self.timeout = timeout
+        self._document_urls = []
+
+        self.get_company_info()
 
     @property
     def document_urls(self):
@@ -20,7 +21,7 @@ class Company():
     def _get(self, url):
       return requests.get(url, timeout=self.timeout)
 
-    def _get_company_info(self):
+    def get_company_info(self):
         page = html.fromstring(self._get(self.url).content)
         companyInfo = page.xpath("//div[@class='companyInfo']")[0] if page.xpath("//div[@class='companyInfo']") else None
         if companyInfo is not None:
@@ -28,12 +29,12 @@ class Company():
           self.sic = indentInfo.getchildren()[1].text if len(indentInfo.getchildren()) > 2 else ""
           self.us_state = indentInfo.getchildren()[3].text if len(indentInfo.getchildren()) > 4 else ""
 
-    def _get_filings_url(self, filing_type="", prior_to="", ownership="include", no_of_entries=100):
+    def get_filings_url(self, filing_type="", prior_to="", ownership="include", no_of_entries=100):
         url = self.url + "&type=" + filing_type + "&dateb=" + prior_to + "&owner=" +  ownership + "&count=" + str(no_of_entries)
         return url
 
     def get_all_filings(self, filing_type="", prior_to="", ownership="include", no_of_entries=100):
-      url = self._get_filings_url(filing_type, prior_to, ownership, no_of_entries)
+      url = self.get_filings_url(filing_type, prior_to, ownership, no_of_entries)
       page = self._get(url)
       return html.fromstring(page.content)
 
@@ -108,8 +109,8 @@ class Company():
       return self.get_10Ks(no_of_documents=1)[0]
 
     @classmethod
-    def get_request(cls, href, isxml=False):
-        page = self._get(href)
+    def get_request(cls, href, isxml=False, timeout=10):
+        page = requests.get(href, timeout=timeout)
         if isxml:
           p = etree.XMLParser(huge_tree=True)
           return etree.fromstring(page.content, parser=p)
