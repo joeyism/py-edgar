@@ -12,9 +12,9 @@ class Edgar():
         for i, item in enumerate(all_companies_array):
             if item == "":
                 continue
-            item_arr = item.split(":")
-            all_companies_array[i] = (item_arr[0], item_arr[1])
-            all_companies_array_rev.append((item_arr[1], item_arr[0]))
+            _name, _cik = Edgar.split_raw_string_to_cik_name(item)
+            all_companies_array[i] = (_name, _cik)
+            all_companies_array_rev.append((_cik, _name))
         self.all_companies_dict = dict(all_companies_array)
         self.all_companies_dict_rev = dict(all_companies_array_rev)
 
@@ -31,6 +31,11 @@ class Edgar():
             if all(word in company.lower() for word in words.split(" ")):
                 possible_companies.append(company)
         return possible_companies
+
+    @classmethod
+    def split_raw_string_to_cik_name(cls, item):
+        item_arr = item.split(":")[:-1]
+        return ":".join(item_arr[:-1]), item_arr[-1]
         
 def test():
     com = Company("Oracle Corp", "0001341439")
