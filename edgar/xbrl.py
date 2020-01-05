@@ -13,12 +13,28 @@ class XBRL(etree.ElementBase):
 
   def __init__(self, *children, attrib=None, nsmap=None, **_extra):
     super().__init__(*children, attrib=None, nsmap=None, **_extra)
+    self.definitions = dict(
+        (child.attrib["id"], self.__parse_context__(child)) for child in self.child.getchildren() if not isinstance(child, etree._Comment) and "context" in child.tag)
     self.relevant_children = [child for child in self.child.getchildren() if not isinstance(child, etree._Comment) and "context" not in child.tag]
     children = [child for child in self.child.getchildren() if not isinstance(child, etree._Comment) and "context" not in child.tag and "unit" not in child.tag and "schemaRef" not in child.tag]
     for elem in children:
       XBRL.clean_tag(elem)
+
     self.relevant_children_parsed = children
-    self.relevant_children_elements = [XBRLElement(child) for child in children]
+    self.relevant_children_elements = [XBRLElement(child, context_ref=self.definitions[child.attrib["contextRef"]] if child.attrib.get("contextRef") else None) for child in children]
+
+  def __parse_context__(self, context):
+    children = context.getchildren()
+    [XBRL.clean_tag(child) for child in children]
+    period = [child for child in children if child.tag == 'period'][0]
+    return {
+        "period": self.__parse_base_elem__(period)
+        }
+
+  def __parse_base_elem__(self, elem):
+    children = elem.getchildren()
+    [XBRL.clean_tag(child) for child in children]
+    return dict((child.tag, child.text) for child in children)
 
   @classmethod
   def clean_tag(cls, elem):
@@ -63,17 +79,17 @@ class XBRL(etree.ElementBase):
     return self.getchildren()[0]
 
   def find_relevant_elements_by_name(self, name):
-    return [elem for elem in self.relevant_children_elements if name in elem.name.lower()]
+    return [elem for elem in self.relevant_children_elements if name.lower() in elem.name.lower()]
 
   def match_relevant_elements_by_name(self, name):
-    return [elem for elem in self.relevant_children_elements if name == elem.name.lower()]
+    return [elem for elem in self.relevant_children_elements if name.lower() == elem.name.lower()]
 
 class XBRLElement(etree.ElementBase):
 
-  def __init__(self, *children, attrib=None, nsmap=None, **_extra):
+  def __init__(self, *children, attrib=None, nsmap=None, context_ref=None, **_extra):
     super().__init__(*children, attrib=None, nsmap=None, **_extra)
     self.child = self.getchildren()[0]
-    self.context_ref = XBRL.parse_context_ref(self.attrib["contextRef"]) if self.attrib.get("contextRef") else {}
+    self.context_ref = context_ref
     self.name = ' '.join(re.findall('[A-Z][^A-Z]*', self.child.tag))
     self.unit_ref = self.attrib.get("unitRef") or ""
 
