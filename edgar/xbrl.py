@@ -91,7 +91,7 @@ class XBRLElement(etree.ElementBase):
     self.child = self.getchildren()[0]
     self.context_ref = context_ref
     self.name = ' '.join(re.findall('[A-Z][^A-Z]*', self.child.tag))
-    self.unit_ref = self.attrib.get("unitRef") or ""
+    self.unit_ref = self.attrib.get("unitRef") or None
 
   @property
   def attrib(self) -> Dict:
@@ -102,12 +102,18 @@ class XBRLElement(etree.ElementBase):
     return self.child.text.replace("\n", "").strip() if self.child.text else ""
 
   def to_dict(self) -> Dict:
-    return {
-      "name": self.name,
-      "value": self.value,
-      "context_ref": self.context_ref,
-      "unit_ref": self.unit_ref
-    }
+    if self.context_ref and self.context_ref.get("period"):
+      return { **{
+        "name": self.name,
+        "value": self.value,
+        "unit_ref": self.unit_ref
+      }, **self.context_ref["period"]}
+    else:
+      return {
+        "name": self.name,
+        "value": self.value,
+        "unit_ref": self.unit_ref
+      }
 
   def __repr__(self):
     return f'<{self.name}="{self.value} {self.unit_ref}" context_ref={self.context_ref}>'
