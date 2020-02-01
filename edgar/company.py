@@ -143,4 +143,4 @@ class Company():
         names_list = []
         for elem in tree.xpath('//*[@id="seriesDiv"]/table/tr[*]/td[2]'):
             names_list.append(elem.text_content())
-        return list(zip(CIKList, namesList))
+        return list(zip(CIKList, names_list))
