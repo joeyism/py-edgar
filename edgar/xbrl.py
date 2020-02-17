@@ -33,7 +33,7 @@ class XBRL(etree.ElementBase):
 
   def __parse_base_elem__(self, elem):
     children = [child for child in elem.getchildren() if XBRL.is_parsable(child)]
-    [XBRL.clean_tag(child) for child in children if ]
+    [XBRL.clean_tag(child) for child in children]
     return dict((child.tag, child.text) for child in children)
 
   @classmethod
