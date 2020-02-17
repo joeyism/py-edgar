@@ -16,7 +16,7 @@ class XBRL(etree.ElementBase):
     self.definitions = dict(
         (child.attrib["id"], self.__parse_context__(child)) for child in self.child.getchildren() if not isinstance(child, etree._Comment) and "context" in child.tag)
     self.relevant_children = [child for child in self.child.getchildren() if not isinstance(child, etree._Comment) and "context" not in child.tag]
-    children = [child for child in self.child.getchildren() if not isinstance(child, etree._Comment) and "context" not in child.tag and "unit" not in child.tag and "schemaRef" not in child.tag]
+    children = [child for child in self.child.getchildren() if XBRL.is_parsable(child)]
     for elem in children:
       XBRL.clean_tag(elem)
 
@@ -32,9 +32,13 @@ class XBRL(etree.ElementBase):
         }
 
   def __parse_base_elem__(self, elem):
-    children = elem.getchildren()
-    [XBRL.clean_tag(child) for child in children]
+    children = [child for child in elem.getchildren() if XBRL.is_parsable(child)]
+    [XBRL.clean_tag(child) for child in children if ]
     return dict((child.tag, child.text) for child in children)
+
+  @classmethod
+  def is_parsable(cls, child):
+    return not isinstance(child, etree._Comment) and "context" not in child.tag and "unit" not in child.tag and "schemaRef" not in child.tag
 
   @classmethod
   def clean_tag(cls, elem):
