@@ -24,7 +24,7 @@ class XBRL(etree.ElementBase):
     self.relevant_children_elements = [XBRLElement(child, context_ref=self.definitions[child.attrib["contextRef"]] if child.attrib.get("contextRef") else None) for child in children]
 
   def __parse_context__(self, context):
-    children = [child for child in elem.getchildren() if XBRL.is_parsable(child)]
+    children = [child for child in elem.getchildren() if not isinstance(child, etree._Comment)]
     [XBRL.clean_tag(child) for child in children]
     period = [child for child in children if child.tag == 'period'][0]
     return {
