@@ -65,6 +65,7 @@ class Company():
             if document_type in row.getchildren()[3].text:
               href = row.getchildren()[2].getchildren()[0].attrib["href"]
               href = BASE_URL + href
+              href = href.replace("ix?doc=/", "") # required for new iXBRL to HTML
               doc = Company.get_request(href)
               result.append(doc)
       return result
