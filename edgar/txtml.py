@@ -28,7 +28,7 @@ class TXTML:
       if child.tag == 'sec-header':
           continue
       html, properties = TXTML.get_HTML_from_document(child)
-      if properties['type'] == '10-K':
+      if '10-K' in properties['type']:
         text = text + html.text_content()
     return text
 
