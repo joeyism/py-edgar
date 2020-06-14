@@ -1,3 +1,4 @@
+import os
 import requests
 from lxml import html, etree
 
@@ -28,6 +29,9 @@ class Company():
           indentInfo = companyInfo.getchildren()[1]
           self.sic = indentInfo.getchildren()[1].text if len(indentInfo.getchildren()) > 2 else ""
           self.us_state = indentInfo.getchildren()[3].text if len(indentInfo.getchildren()) > 4 else ""
+
+        self._document_urls = [ BASE_URL + elem.attrib["href"]
+            for elem in page.xpath("//*[@id='documentsbutton']") if elem.attrib.get("href")]
 
     def get_filings_url(self, filing_type="", prior_to="", ownership="include", no_of_entries=100):
         url = self.url + "&type=" + filing_type + "&dateb=" + prior_to + "&owner=" +  ownership + "&count=" + str(no_of_entries)
@@ -120,7 +124,6 @@ class Company():
 
     @classmethod
     def get_documents(cls, tree, no_of_documents=1, debug=False):
-        BASE_URL = "https://www.sec.gov"
         elems = tree.xpath('//*[@id="documentsbutton"]')[:no_of_documents]
         result = []
         for elem in elems:
