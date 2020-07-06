@@ -26,7 +26,7 @@ class Edgar():
 
     def match_cik_by_company_name(self, name, top=5) -> List[Tuple[str, int]]:
         result = []
-        for company in tqdm(edgar.all_companies_dict):
+        for company in tqdm(self.all_companies_dict):
             result.append((company, fuzz.partial_ratio(name, company)))
         return sorted(result, key=lambda row: row[1], reverse=True)[:top]
 

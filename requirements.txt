@@ -1,4 +1,4 @@
 requests
 lxml
 tqdm
-fuzzywuzzy
+fuzzywuzzy[speedup]
