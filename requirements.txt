@@ -1,2 +1,4 @@
 requests
 lxml
+tqdm
+fuzzywuzzy

@@ -25,6 +25,6 @@ setup(
         url = 'https://github.com/joeyism/py-edgar', # use the URL to the github repo
         download_url = 'https://github.com/joeyism/py-edgar/archive/{}.tar.gz'.format(version),
         keywords = ['edgar', 'sec'], 
-        install_requires = ['requests', 'lxml'],
+        install_requires=[package.split("\n")[0] for package in open("requirements.txt", "r").readlines()],
         classifiers = [],
         )

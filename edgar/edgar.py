@@ -1,5 +1,8 @@
+from typing import Tuple, List
 from lxml import html
+from tqdm import tqdm
 import requests
+from fuzzywuzzy import process, fuzz
 
 class Edgar():
 
@@ -18,13 +21,19 @@ class Edgar():
         self.all_companies_dict = dict(all_companies_array)
         self.all_companies_dict_rev = dict(all_companies_array_rev)
 
-    def get_cik_by_company_name(self, name):
+    def get_cik_by_company_name(self, name) -> str:
         return self.all_companies_dict[name]
 
-    def get_company_name_by_cik(self, cik):
+    def match_cik_by_company_name(self, name, top=5) -> List[Tuple[str, int]]:
+        result = []
+        for company in tqdm(edgar.all_companies_dict):
+            result.append((company, fuzz.partial_ratio(name, company)))
+        return sorted(result, key=lambda row: row[1], reverse=True)[:top]
+
+    def get_company_name_by_cik(self, cik) -> str:
         return self.all_companies_dict_rev[cik]
 
-    def find_company_name(self, words):
+    def find_company_name(self, words) -> List[str]:
         possible_companies = []
         words = words.lower()
         for company in self.all_companies_dict:

@@ -50,43 +50,38 @@ The **Company** class has two fields:
 * cik (company CIK number)
 * timeout (optional) (default: 10)
 
-##### get_filings_url
-Returns a url to fetch filings data
-* **Input**
+#### Methods
+* `get_filings_url(self, filing_type="", prior_to="", ownership="include", no_of_entries=100) -> str` Returns a url to fetch filings data
     * filing_type: The type of document you want. i.e. 10-K, S-8, 8-K. If not specified, it'll return all documents
     * prior_to: Time prior which documents are to be retrieved. If not specified, it'll return all documents
     * ownership: defaults to include. Options are include, exclude, only.
     * no_of_entries: defaults to 100. Returns the number of entries to be returned. Maximum is 100.
 
-##### get_all_filings
-Returns the HTML in the form of [lxml.html](http://lxml.de/lxmlhtml.html)
-* **Input**
+
+* `get_all_filings(self, filing_type="", prior_to="", ownership="include", no_of_entries=100) -> lxml.html.HtmlElement` Returns the HTML in the form of [lxml.html](http://lxml.de/lxmlhtml.html)
     * filing_type: The type of document you want. i.e. 10-K, S-8, 8-K. If not specified, it'll return all documents
     * prior_to: Time prior which documents are to be retrieved. If not specified, it'll return all documents
     * ownership: defaults to include. Options are include, exclude, only.
     * no_of_entries: defaults to 100. Returns the number of entries to be returned. Maximum is 100.
 
-##### get_10Ks
-Returns the HTML in the form of [lxml.html](http://lxml.de/lxmlhtml.html) of concatenation of all the documents in the 10-K
-* **Input**
+
+* `get_10Ks(self, no_of_documents=1) -> List[lxml.html.HtmlElement]` Returns the HTML in the form of [lxml.html](http://lxml.de/lxmlhtml.html) of concatenation of all the documents in the 10-K
     * no_of_documents (default: 1): numer of documents to be retrieved
 
-##### get_document_type_from_10K
-Returns the HTML in the form of [lxml.html](http://lxml.de/lxmlhtml.html) of the document within 10-K
-* **Input**
+
+* `get_document_type_from_10K(self, document_type, no_of_documents=1) -> List[lxml.html.HtmlElement]` Returns the HTML in the form of [lxml.html](http://lxml.de/lxmlhtml.html) of the document within 10-K
     * document_type: Tye type of document you want, i.e. 10-K, EX-3.2
     * no_of_documents (default: 1): numer of documents to be retrieved
 
-##### get_data_files_from_10K
-Returns the HTML in the form of [lxml.html](http://lxml.de/lxmlhtml.html) of the data file within 10-K
-* **Input**
+
+* `get_data_files_from_10K(self, document_type, no_of_documents=1, isxml=False) -> List[lxml.html.HtmlElement]` Returns the HTML in the form of [lxml.html](http://lxml.de/lxmlhtml.html) of the data file within 10-K
     * document_type: Tye type of document you want, i.e. EX-101.INS
     * no_of_documents (default: 1): numer of documents to be retrieved
     * isxml (default: False): by default, things aren't case sensitive and is parsed with `html` in `lxml. If this is True, then it is parsed with `etree` which is case sensitive
 
-##### get_documents (class method)
-Returns a list of strings, each string contains the body of the specified document from input
-* **Input**
+#### Class Method
+
+* `get_documents(cls, tree, no_of_documents=1, debug=False) -> List` Returns a list of strings, each string contains the body of the specified document from input
     * tree: lxml.html form that is returned from Company.getAllFilings
     * no_of_documents: number of document returned. If it is 1, the returned result is just one string, instead of a list of strings. Defaults to 1.
     * debug (default: **False**): if **True**, displays the URL and form
@@ -94,17 +89,15 @@ Returns a list of strings, each string contains the body of the specified docume
 
 ### Edgar
 Gets all companies from EDGAR
-##### get_cik_by_company_name
-* **Input**
-    * name: name of the company
 
-##### get_company_name_by_cik
-* **Input**
-    * cik: cik of the company
+`get_cik_by_company_name(company_name: str) -> str`: Returns the CIK if given the exact name or the company
 
-##### find_company_name
-* **Input**
-    * words: input words to search the company
+`get_company_name_by_cik(cik: str) -> str`: Returns the company name if given the CIK (with the `000`s) 
+
+`find_company_name(words: str) -> List[str]`: Returns a list of company names by exact word matching
+
+`match_cik_by_company_name(words: str, top=5) -> List[Tuple[str, int]]`: Returns a list of company names and their fuzzy match score
+* `top (default: 5)` returns the top number of fuzzy matches. If set to `None`, it'll return the whole list (which is a lot)
 
 ### XBRL
 Parses data from XBRL

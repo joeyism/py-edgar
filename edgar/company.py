@@ -1,6 +1,7 @@
 import os
 import requests
 from lxml import html, etree
+import lxml
 
 BASE_URL = "https://www.sec.gov"
 
@@ -33,11 +34,11 @@ class Company():
         self._document_urls = [ BASE_URL + elem.attrib["href"]
             for elem in page.xpath("//*[@id='documentsbutton']") if elem.attrib.get("href")]
 
-    def get_filings_url(self, filing_type="", prior_to="", ownership="include", no_of_entries=100):
+    def get_filings_url(self, filing_type="", prior_to="", ownership="include", no_of_entries=100) -> str:
         url = self.url + "&type=" + filing_type + "&dateb=" + prior_to + "&owner=" +  ownership + "&count=" + str(no_of_entries)
         return url
 
-    def get_all_filings(self, filing_type="", prior_to="", ownership="include", no_of_entries=100):
+    def get_all_filings(self, filing_type="", prior_to="", ownership="include", no_of_entries=100) -> lxml.html.HtmlElement:
       url = self.get_filings_url(filing_type, prior_to, ownership, no_of_entries)
       page = self._get(url)
       return html.fromstring(page.content)
@@ -55,7 +56,7 @@ class Company():
           grouped = []
       return result
 
-    def get_document_type_from_10K(self, document_type, no_of_documents=1):
+    def get_document_type_from_10K(self, document_type, no_of_documents=1) -> List[lxml.html.HtmlElement]:
       tree = self.get_all_filings(filing_type="10-K")
       url_groups = self._group_document_type(tree, "10-K")[:no_of_documents]
       result = []
@@ -74,7 +75,7 @@ class Company():
               result.append(doc)
       return result
 
-    def get_data_files_from_10K(self, document_type, no_of_documents=1, isxml=False):
+    def get_data_files_from_10K(self, document_type, no_of_documents=1, isxml=False) -> List[lxml.html.HtmlElement]:
       tree = self.get_all_filings(filing_type="10-K")
       url_groups = self._group_document_type(tree, "10-K")[:no_of_documents]
       result = []
@@ -95,7 +96,7 @@ class Company():
               result.append(doc)
       return result
 
-    def get_10Ks(self, no_of_documents=1):
+    def get_10Ks(self, no_of_documents=1) -> List[lxml.html.HtmlElement]:
       tree = self.get_all_filings(filing_type="10-K")
       elems = tree.xpath('//*[@id="documentsbutton"]')[:no_of_documents]
       result = []
@@ -110,7 +111,7 @@ class Company():
           result.append(doc)
       return result
 
-    def get_10K(self):
+    def get_10K(self) -> List[lxml.html.HtmlElement]:
       return self.get_10Ks(no_of_documents=1)[0]
 
     @classmethod
@@ -123,7 +124,7 @@ class Company():
           return html.fromstring(page.content)
 
     @classmethod
-    def get_documents(cls, tree, no_of_documents=1, debug=False):
+    def get_documents(cls, tree, no_of_documents=1, debug=False) -> List:
         elems = tree.xpath('//*[@id="documentsbutton"]')[:no_of_documents]
         result = []
         for elem in elems:
