@@ -51,6 +51,8 @@ The **Company** class has two fields:
 * timeout (optional) (default: 10)
 
 #### Methods
+
+##### get_filings_url
 `get_filings_url(self, filing_type="", prior_to="", ownership="include", no_of_entries=100) -> str`
 
 Returns a url to fetch filings data
@@ -60,7 +62,7 @@ Returns a url to fetch filings data
 * no_of_entries: defaults to 100. Returns the number of entries to be returned. Maximum is 100.
 
 
-
+##### get_all_filings
 `get_all_filings(self, filing_type="", prior_to="", ownership="include", no_of_entries=100) -> lxml.html.HtmlElement`
 
 Returns the HTML in the form of [lxml.html](http://lxml.de/lxmlhtml.html)
@@ -70,14 +72,14 @@ Returns the HTML in the form of [lxml.html](http://lxml.de/lxmlhtml.html)
 * no_of_entries: defaults to 100. Returns the number of entries to be returned. Maximum is 100.
 
 
-
+##### get_10Ks
 `get_10Ks(self, no_of_documents=1) -> List[lxml.html.HtmlElement]`
 
 Returns the HTML in the form of [lxml.html](http://lxml.de/lxmlhtml.html) of concatenation of all the documents in the 10-K
 * no_of_documents (default: 1): numer of documents to be retrieved
 
 
-
+##### get_document_type_from_10K
 `get_document_type_from_10K(self, document_type, no_of_documents=1) -> List[lxml.html.HtmlElement]`
 
 Returns the HTML in the form of [lxml.html](http://lxml.de/lxmlhtml.html) of the document within 10-K
@@ -85,7 +87,7 @@ Returns the HTML in the form of [lxml.html](http://lxml.de/lxmlhtml.html) of the
 * no_of_documents (default: 1): numer of documents to be retrieved
 
 
-
+##### get_data_files_from_10K
 `get_data_files_from_10K(self, document_type, no_of_documents=1, isxml=False) -> List[lxml.html.HtmlElement]`
 
 Returns the HTML in the form of [lxml.html](http://lxml.de/lxmlhtml.html) of the data file within 10-K
