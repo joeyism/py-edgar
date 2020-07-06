@@ -1,4 +1,4 @@
-from typing import Tuple, List, Any
+from typing import Tuple, List, Any, Dict
 from lxml import html
 from tqdm import tqdm
 import requests
