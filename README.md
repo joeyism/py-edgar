@@ -113,7 +113,7 @@ Gets all companies from EDGAR
 
 `find_company_name(words: str) -> List[str]`: Returns a list of company names by exact word matching
 
-`match_cik_by_company_name(words: str, top=5) -> List[Tuple[str, int]]`: Returns a list of company names and their fuzzy match score
+`match_company_by_company_name(self, name, top=5) -> List[Dict[str, Any]]`: Returns a list of dictionarys, with company names, CIK, and their fuzzy match score
 * `top (default: 5)` returns the top number of fuzzy matches. If set to `None`, it'll return the whole list (which is a lot)
 
 ### XBRL

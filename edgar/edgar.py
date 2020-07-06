@@ -1,4 +1,4 @@
-from typing import Tuple, List
+from typing import Tuple, List, Any
 from lxml import html
 from tqdm import tqdm
 import requests
@@ -24,11 +24,11 @@ class Edgar():
     def get_cik_by_company_name(self, name) -> str:
         return self.all_companies_dict[name]
 
-    def match_cik_by_company_name(self, name, top=5) -> List[Tuple[str, int]]:
+    def match_company_by_company_name(self, name, top=5) -> List[Dict[str, Any]]:
         result = []
-        for company in tqdm(self.all_companies_dict):
-            result.append((company, fuzz.partial_ratio(name, company)))
-        return sorted(result, key=lambda row: row[1], reverse=True)[:top]
+        for company, cik in tqdm(self.all_companies_dict.items()):
+            result.append({"company_name": company, "cik": cik, "score": fuzz.partial_ratio(name, company)})
+        return sorted(result, key=lambda row: row["score"], reverse=True)[:top]
 
     def get_company_name_by_cik(self, cik) -> str:
         return self.all_companies_dict_rev[cik]
