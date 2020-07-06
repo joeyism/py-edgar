@@ -11,7 +11,7 @@ version = re.search(
     re.M
     ).group(1)
 
-with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
+with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
@@ -20,6 +20,7 @@ setup(
         version = version,
         description = 'Scrape data from SEC\'s EDGAR',
         long_description = long_description,
+        long_description_content_type='text/markdown',
         author = 'Joey Sham',
         author_email = 'sham.joey@gmail.com',
         url = 'https://github.com/joeyism/py-edgar', # use the URL to the github repo
