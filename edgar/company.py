@@ -63,6 +63,8 @@ class Company():
       result = []
       for url_group in url_groups:
         for url in url_group:
+          if len(url.split("/")[-1].split(".")) == 1:
+            continue
           url = BASE_URL + url
           self._document_urls.append(url)
           content_page = Company.get_request(url)
@@ -72,6 +74,7 @@ class Company():
               href = row.getchildren()[2].getchildren()[0].attrib["href"]
               href = BASE_URL + href
               href = href.replace("ix?doc=/", "") # required for new iXBRL to HTML
+              import ipdb; ipdb.set_trace()
               doc = Company.get_request(href)
               result.append(doc)
       return result
