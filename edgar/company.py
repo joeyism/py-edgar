@@ -63,8 +63,6 @@ class Company():
       result = []
       for url_group in url_groups:
         for url in url_group:
-          if len(url.split("/")[-1].split(".")) == 1:
-            continue
           url = BASE_URL + url
           self._document_urls.append(url)
           content_page = Company.get_request(url)
@@ -74,6 +72,8 @@ class Company():
               href = row.getchildren()[2].getchildren()[0].attrib["href"]
               href = BASE_URL + href
               href = href.replace("ix?doc=/", "") # required for new iXBRL to HTML
+              if len(href.split("/")[-1].split(".")) == 1:
+                continue
               doc = Company.get_request(href)
               result.append(doc)
       return result
@@ -99,18 +99,22 @@ class Company():
               result.append(doc)
       return result
 
+    @classmethod
+    def __get_documents_from_element__(cls, elem):
+      url = BASE_URL + elem.attrib["href"]
+      content_page = Company.get_request(url)
+      table = content_page.find_class("tableFile")[0]
+      last_row = table.getchildren()[-1]
+      href = last_row.getchildren()[2].getchildren()[0].attrib["href"]
+      href = BASE_URL + href
+      return Company.get_request(href)
+
     def get_10Ks(self, no_of_documents=1) -> List[lxml.html.HtmlElement]:
       tree = self.get_all_filings(filing_type="10-K")
       elems = tree.xpath('//*[@id="documentsbutton"]')[:no_of_documents]
       result = []
       for elem in elems:
-          url = BASE_URL + elem.attrib["href"]
-          content_page = Company.get_request(url)
-          table = content_page.find_class("tableFile")[0]
-          last_row = table.getchildren()[-1]
-          href = last_row.getchildren()[2].getchildren()[0].attrib["href"]
-          href = BASE_URL + href
-          doc = Company.get_request(href)
+          doc = Company.__get_documents_from_element__(elem)
           result.append(doc)
       return result
 
@@ -131,13 +135,7 @@ class Company():
         elems = tree.xpath('//*[@id="documentsbutton"]')[:no_of_documents]
         result = []
         for elem in elems:
-            url = BASE_URL + elem.attrib["href"]
-            content_page = cls.get_request(url)
-            if debug:
-              print("URL:", url)
-              print("FORM:", content_page.find_class("formContent")[0].text_content())
-            url = BASE_URL + content_page.xpath('//*[@id="formDiv"]/div/table/tr[2]/td[3]/a')[0].attrib["href"]
-            filing = cls.get_request(url)
+            filing = Company.__get_documents_from_element__(elem)
             result.append(filing)
 
         if len(result) == 1:
