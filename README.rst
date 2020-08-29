@@ -62,7 +62,9 @@ API
 Company
 ^^^^^^^
 
-The **Company** class has two fields:
+.. code-block:: python
+
+   Company(name, cik, timeout=10)
 
 
 * name (company name)
@@ -71,9 +73,6 @@ The **Company** class has two fields:
 
 Methods
 ~~~~~~~
-
-get_filings_url
-"""""""""""""""
 
 ``get_filings_url(self, filing_type="", prior_to="", ownership="include", no_of_entries=100) -> str``
 
@@ -85,9 +84,6 @@ Returns a url to fetch filings data
 * ownership: defaults to include. Options are include, exclude, only.
 * no_of_entries: defaults to 100. Returns the number of entries to be returned. Maximum is 100.
 
-get_all_filings
-"""""""""""""""
-
 ``get_all_filings(self, filing_type="", prior_to="", ownership="include", no_of_entries=100) -> lxml.html.HtmlElement``
 
 Returns the HTML in the form of `lxml.html <http://lxml.de/lxmlhtml.html>`_
@@ -98,18 +94,13 @@ Returns the HTML in the form of `lxml.html <http://lxml.de/lxmlhtml.html>`_
 * ownership: defaults to include. Options are include, exclude, only.
 * no_of_entries: defaults to 100. Returns the number of entries to be returned. Maximum is 100.
 
-get_10Ks
-""""""""
-
-``get_10Ks(self, no_of_documents=1) -> List[lxml.html.HtmlElement]``
+``get_10Ks(self, no_of_documents=1, as_documents=False) -> List[lxml.html.HtmlElement]``
 
 Returns the HTML in the form of `lxml.html <http://lxml.de/lxmlhtml.html>`_ of concatenation of all the documents in the 10-K
 
 
 * no_of_documents (default: 1): numer of documents to be retrieved
-
-get_document_type_from_10K
-""""""""""""""""""""""""""
+* When ``as_documents`` is set to ``True``\ , it returns ``-> List[edgar.document.Documents]`` a list of `Documents <#documents>`_
 
 ``get_document_type_from_10K(self, document_type, no_of_documents=1) -> List[lxml.html.HtmlElement]``
 
@@ -118,9 +109,6 @@ Returns the HTML in the form of `lxml.html <http://lxml.de/lxmlhtml.html>`_ of t
 
 * document_type: Tye type of document you want, i.e. 10-K, EX-3.2
 * no_of_documents (default: 1): numer of documents to be retrieved
-
-get_data_files_from_10K
-"""""""""""""""""""""""
 
 ``get_data_files_from_10K(self, document_type, no_of_documents=1, isxml=False) -> List[lxml.html.HtmlElement]``
 
@@ -134,12 +122,13 @@ Returns the HTML in the form of `lxml.html <http://lxml.de/lxmlhtml.html>`_ of t
 Class Method
 ~~~~~~~~~~~~
 
+``get_documents(self, tree: lxml.html.Htmlelement, no_of_documents=1, debug=False, as_documents=False) -> List[lxml.html.HtmlElement]`` Returns a list of strings, each string contains the body of the specified document from input
 
-* ``get_documents(cls, tree, no_of_documents=1, debug=False) -> List`` Returns a list of strings, each string contains the body of the specified document from input
 
-  * tree: lxml.html form that is returned from Company.getAllFilings
-  * no_of_documents: number of document returned. If it is 1, the returned result is just one string, instead of a list of strings. Defaults to 1.
-  * debug (default: **False**\ ): if **True**\ , displays the URL and form
+* tree: lxml.html form that is returned from Company.getAllFilings
+* no_of_documents: number of document returned. If it is 1, the returned result is just one string, instead of a list of strings. Defaults to 1.
+* debug (default: **False**\ ): if **True**\ , displays the URL and form
+* When ``as_documents`` is set to ``True``\ , it returns ``-> List[edgar.document.Documents]`` a list of `Documents <#documents>`_
 
 Edgar
 ^^^^^
@@ -152,7 +141,7 @@ Gets all companies from EDGAR
 
 ``find_company_name(words: str) -> List[str]``\ : Returns a list of company names by exact word matching
 
-``match_cik_by_company_name(words: str, top=5) -> List[Tuple[str, int]]``\ : Returns a list of company names and their fuzzy match score
+``match_company_by_company_name(self, name, top=5) -> List[Dict[str, Any]]``\ : Returns a list of dictionarys, with company names, CIK, and their fuzzy match score
 
 
 * ``top (default: 5)`` returns the top number of fuzzy matches. If set to ``None``\ , it'll return the whole list (which is a lot)
@@ -162,15 +151,40 @@ XBRL
 
 Parses data from XBRL
 
+Properties
+~~~~~~~~~~
 
-* ``relevant_children``
+``relevant_children``
 
-  * get children that are not ``context``
 
-* ``relevant_children_parsed``
+* get children that are not ``context``
+  ``relevant_children_parsed``
+* get children that are not ``context``\ , ``unit``\ , ``schemaRef``
+* cleans tags
 
-  * get children that are not ``context``\ , ``unit``\ , ``schemaRef``
-  * cleans tags
+Documents
+^^^^^^^^^
+
+Filing and Documents Details for the SEC EDGAR Form (such as 10-K)
+
+.. code-block:: python
+
+   Documents(url, timeout=10)
+
+Properties
+~~~~~~~~~~
+
+``url: str``\ : URL of the document
+
+``content: dict``\ : Dictionary of meta data of the document
+
+``content['Filing Date']: str``\ : Document filing date
+
+``content['Accepted']: str``\ : Document accepted datetime
+
+``content['Period of Report']: str``\ : The date period that the document is for
+
+``element: lxml.html.HtmlElement``\ : The HTML element for the Document (from the url) so it can be further parsed
 
 Contribution
 ------------

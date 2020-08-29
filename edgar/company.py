@@ -135,7 +135,7 @@ class Company():
           return html.fromstring(page.content)
 
     @classmethod
-    def get_documents(cls, tree: html.Htmlelement, no_of_documents=1, debug=False, as_documents=False) -> List:
+    def get_documents(cls, tree: html.HtmlElement, no_of_documents=1, debug=False, as_documents=False) -> List:
         elems = tree.xpath('//*[@id="documentsbutton"]')[:no_of_documents]
         result = []
         for elem in elems:
