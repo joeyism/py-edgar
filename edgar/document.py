@@ -7,7 +7,7 @@ class Document:
     self.url = url
     self.text = requests.get(self.url, timeout=timeout).content
 
-class Documents:
+class Documents(str):
 
   def __get_text_from_list__(self, arr):
     return [val.text_content() for val in arr]
@@ -20,3 +20,10 @@ class Documents:
     info_head = self.__get_text_from_list__(content.find_class("infoHead"))
     info = self.__get_text_from_list__(content.find_class("info"))
     self.content = dict(zip(info_head, info))
+    self.element = html.fromstring(requests.get(self.url, timeout=timeout).content)
+
+  def __repr__(self):
+    return str(self.__dict__)
+
+  def __str__(self):
+    return str(self.__dict__)

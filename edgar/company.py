@@ -2,6 +2,7 @@ from typing import List
 import os
 import requests
 from lxml import html, etree
+from .document import Documents
 import lxml
 
 BASE_URL = "https://www.sec.gov"
@@ -100,21 +101,24 @@ class Company():
       return result
 
     @classmethod
-    def __get_documents_from_element__(cls, elem):
+    def __get_documents_from_element__(cls, elem, as_documents=False):
       url = BASE_URL + elem.attrib["href"]
-      content_page = Company.get_request(url)
-      table = content_page.find_class("tableFile")[0]
-      last_row = table.getchildren()[-1]
-      href = last_row.getchildren()[2].getchildren()[0].attrib["href"]
-      href = BASE_URL + href
-      return Company.get_request(href)
+      if as_documents:
+        return Documents(url)
+      else:
+        content_page = Company.get_request(url)
+        table = content_page.find_class("tableFile")[0]
+        last_row = table.getchildren()[-1]
+        href = last_row.getchildren()[2].getchildren()[0].attrib["href"]
+        href = BASE_URL + href
+        return Company.get_request(href)
 
-    def get_10Ks(self, no_of_documents=1) -> List[lxml.html.HtmlElement]:
+    def get_10Ks(self, no_of_documents=1, as_documents=False) -> List[lxml.html.HtmlElement]:
       tree = self.get_all_filings(filing_type="10-K")
       elems = tree.xpath('//*[@id="documentsbutton"]')[:no_of_documents]
       result = []
       for elem in elems:
-          doc = Company.__get_documents_from_element__(elem)
+          doc = Company.__get_documents_from_element__(elem, as_documents=as_documents)
           result.append(doc)
       return result
 
@@ -131,11 +135,11 @@ class Company():
           return html.fromstring(page.content)
 
     @classmethod
-    def get_documents(cls, tree, no_of_documents=1, debug=False) -> List:
+    def get_documents(cls, tree: html.Htmlelement, no_of_documents=1, debug=False, as_documents=False) -> List:
         elems = tree.xpath('//*[@id="documentsbutton"]')[:no_of_documents]
         result = []
         for elem in elems:
-            filing = Company.__get_documents_from_element__(elem)
+            filing = Company.__get_documents_from_element__(elem, as_documents=as_documents)
             result.append(filing)
 
         if len(result) == 1:
