@@ -75,7 +75,7 @@ Returns the HTML in the form of [lxml.html](http://lxml.de/lxmlhtml.html)
 
 Returns the HTML in the form of [lxml.html](http://lxml.de/lxmlhtml.html) of concatenation of all the documents in the 10-K
 * no_of_documents (default: 1): numer of documents to be retrieved
-* When `as_documents` is set to `True`, it returns `-> List[edgar.document.Documents]` a list of Documents
+* When `as_documents` is set to `True`, it returns `-> List[edgar.document.Documents]` a list of [Documents](#documents)
 
 
 `get_document_type_from_10K(self, document_type, no_of_documents=1) -> List[lxml.html.HtmlElement]`
