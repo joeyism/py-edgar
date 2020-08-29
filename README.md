@@ -99,7 +99,7 @@ Returns the HTML in the form of [lxml.html](http://lxml.de/lxmlhtml.html) of the
 * tree: lxml.html form that is returned from Company.getAllFilings
 * no_of_documents: number of document returned. If it is 1, the returned result is just one string, instead of a list of strings. Defaults to 1.
 * debug (default: **False**): if **True**, displays the URL and form
-* When `as_documents` is set to `True`, it returns `-> List[edgar.document.Documents]` a list of Documents
+* When `as_documents` is set to `True`, it returns `-> List[edgar.document.Documents]` a list of [Documents](#documents)
 
 
 
