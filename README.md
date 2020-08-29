@@ -95,10 +95,11 @@ Returns the HTML in the form of [lxml.html](http://lxml.de/lxmlhtml.html) of the
 #### Class Method
 
 `get_documents(self, tree: lxml.html.Htmlelement, no_of_documents=1, debug=False, as_documents=False) -> List[lxml.html.HtmlElement]` Returns a list of strings, each string contains the body of the specified document from input
-    * tree: lxml.html form that is returned from Company.getAllFilings
-    * no_of_documents: number of document returned. If it is 1, the returned result is just one string, instead of a list of strings. Defaults to 1.
-    * debug (default: **False**): if **True**, displays the URL and form
-    * When `as_documents` is set to `True`, it returns `-> List[edgar.document.Documents]` a list of Documents
+
+* tree: lxml.html form that is returned from Company.getAllFilings
+* no_of_documents: number of document returned. If it is 1, the returned result is just one string, instead of a list of strings. Defaults to 1.
+* debug (default: **False**): if **True**, displays the URL and form
+* When `as_documents` is set to `True`, it returns `-> List[edgar.document.Documents]` a list of Documents
 
 
 
@@ -118,10 +119,10 @@ Gets all companies from EDGAR
 Parses data from XBRL
 #### Properties
 `relevant_children`
-    * get children that are not `context`
+* get children that are not `context`
 `relevant_children_parsed`
-    * get children that are not `context`, `unit`, `schemaRef`
-    * cleans tags
+* get children that are not `context`, `unit`, `schemaRef`
+* cleans tags
 
 ### Documents
 Filing and Documents Details for the SEC EDGAR Form (such as 10-K)
