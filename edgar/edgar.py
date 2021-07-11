@@ -1,14 +1,19 @@
 from typing import Tuple, List, Any, Dict
 from lxml import html
 from tqdm import tqdm
+import os
 import requests
 from fuzzywuzzy import process, fuzz
 
 class Edgar():
 
-    def __init__(self):
-        all_companies_page = requests.get("https://www.sec.gov/Archives/edgar/cik-lookup-data.txt")
-        all_companies_content = all_companies_page.content.decode("latin1")
+    def __init__(self, companies_page_path=None):
+        all_companies_content : str
+        if companies_page_path is not None and os.path.isfile(companies_page_path):
+            all_companies_content = open(companies_page_path, encoding="latin-1").read()
+        else:
+            all_companies_page = requests.get("https://www.sec.gov/Archives/edgar/cik-lookup-data.txt")
+            all_companies_content = all_companies_page.content.decode("latin1")
         all_companies_array = all_companies_content.split("\n")
         del all_companies_array[-1]
         all_companies_array_rev = []

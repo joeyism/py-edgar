@@ -31,6 +31,15 @@ edgar = Edgar()
 possible_companies = edgar.find_company_name("Cisco System")
 ```
 
+To avoid pull of all company data from sec.gov on Edgar initialization, pass in a local path to the data
+
+``` python
+from edgar import Edgar
+edgar = Edgar("/path/to/cik-lookup-data.txt")
+possible_companies = edgar.find_company_name("Cisco System")
+```
+
+
 To get XBRL data, run
 ```python
 from edgar import Company, XBRL, XBRLElement
