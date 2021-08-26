@@ -29,9 +29,11 @@ class Edgar():
     def get_cik_by_company_name(self, name) -> str:
         return self.all_companies_dict[name]
 
-    def match_company_by_company_name(self, name, top=5) -> List[Dict[str, Any]]:
+    def match_company_by_company_name(self, name, top=5, progress=True) -> List[Dict[str, Any]]:
         result = []
-        for company, cik in tqdm(self.all_companies_dict.items()):
+        for company, cik in (
+            tqdm(self.all_companies_dict.items()) if progress else self.all_companies_dict.items()
+        ):
             result.append({"company_name": company, "cik": cik, "score": fuzz.partial_ratio(name, company)})
         return sorted(result, key=lambda row: row["score"], reverse=True)[:top]
 
