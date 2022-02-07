@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 from typing import List
 import os
 import requests
@@ -7,6 +8,19 @@ import lxml
 
 BASE_URL = "https://www.sec.gov"
 
+# The required SEC EDGAR request header
+SEC_HEADERS = {
+    'user-agent': 'Edgar oit@sec.gov',
+    'accept-encoding':  'gzip, deflate',
+    'host':  'www.sec.gov',
+    'referer': 'https://www.sec.gov/', 
+    'cache-control': 'no-cache', 
+    #'connection': 'close'
+    #'connection': 'keep-alive'
+}
+# Set new default requests header
+headers = SEC_HEADERS
+
 class Company():
 
     def __init__(self, name, cik, timeout=10):
@@ -15,7 +29,6 @@ class Company():
         self.url = f"https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK={cik}"
         self.timeout = timeout
         self._document_urls = []
-
         self.get_company_info()
 
     @property
@@ -23,7 +36,7 @@ class Company():
       return list(set(self._document_urls))
 
     def _get(self, url):
-      return requests.get(url, timeout=self.timeout)
+      return requests.get(url, timeout=self.timeout, headers=SEC_HEADERS)
 
     def get_company_info(self):
         page = html.fromstring(self._get(self.url).content)
@@ -127,7 +140,7 @@ class Company():
 
     @classmethod
     def get_request(cls, href, isxml=False, timeout=10):
-        page = requests.get(href, timeout=timeout)
+        page = requests.get(href, timeout=timeout, headers=SEC_HEADERS)
         if isxml:
           p = etree.XMLParser(huge_tree=True)
           return etree.fromstring(page.content, parser=p)
