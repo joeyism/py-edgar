@@ -168,9 +168,12 @@ class Company:
             href = BASE_URL + href
             return Company.get_request(href)
 
-    def get_10Ks(
-        self, no_of_documents=1, as_documents=False
-    ) -> List[html.HtmlElement]:
+    @classmethod
+    def __get_metadata_from_element__(cls, elem) -> dict[str, str]:
+        url = BASE_URL + elem.attrib["href"]
+        return Documents(url).content
+
+    def get_10Ks(self, no_of_documents=1, as_documents=False) -> List[html.HtmlElement]:
         tree = self.get_all_filings(filing_type="10-K")
         elems = tree.xpath('//*[@id="documentsbutton"]')[:no_of_documents]
         result = []
@@ -181,8 +184,19 @@ class Company:
             result.append(doc)
         return result
 
-    def get_10K(self) -> List[html.HtmlElement]:
-        res = self.get_10Ks(no_of_documents=1)
+    def get_10Ks_metadata(self, no_of_documents=1) -> List[dict]:
+        tree = self.get_all_filings(filing_type="10-K")
+        elems = tree.xpath('//*[@id="documentsbutton"]')[:no_of_documents]
+        return [Company.__get_metadata_from_element__(elem) for elem in elems]
+
+    def get_10K(self, as_documents=False) -> List[html.HtmlElement]:
+        res = self.get_10Ks(no_of_documents=1, as_documents=as_documents)
+        if res:
+            return res[0]
+        return []
+
+    def get_10K_metadata(self) -> List[dict]:
+        res = self.get_10Ks_metadata(no_of_documents=1)
         if res:
             return res[0]
         return []
@@ -198,7 +212,11 @@ class Company:
 
     @classmethod
     def get_documents(
-        cls, tree: html.HtmlElement, no_of_documents: int=1, debug: bool=False, as_documents: bool=False
+        cls,
+        tree: html.HtmlElement,
+        no_of_documents: int = 1,
+        debug: bool = False,
+        as_documents: bool = False,
     ) -> List:
         elems = tree.xpath('//*[@id="documentsbutton"]')[:no_of_documents]
         result = []

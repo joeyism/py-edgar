@@ -7,7 +7,7 @@ from .edgar import Edgar
 from .txtml import TXTML
 from .xbrl import XBRL, XBRLElement
 
-__version__ = "5.5.2"
+__version__ = "5.6.0"
 
 modules = glob.glob(dirname(__file__) + "/*.py")
 __all__ = [
