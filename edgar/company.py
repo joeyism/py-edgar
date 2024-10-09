@@ -136,7 +136,10 @@ class Company():
       return result
 
     def get_10K(self) -> List[lxml.html.HtmlElement]:
-      return self.get_10Ks(no_of_documents=1)[0]
+      res = self.get_10Ks(no_of_documents=1)
+      if res:
+          return res[0]
+      return []
 
     @classmethod
     def get_request(cls, href, isxml=False, timeout=10):
