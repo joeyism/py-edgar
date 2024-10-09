@@ -70,12 +70,46 @@ class Edgar():
     def get_company_name_by_cik(self, cik) -> str:
         return self.all_companies_dict_rev[cik]
 
-    def find_company_name(self, words) -> List[str]:
+    def find_company_name(self, words: str) -> List[str]:
         possible_companies = []
         words = words.lower()
         for company in self.all_companies_dict:
             if all(word in company.lower() for word in words.split(" ")):
                 possible_companies.append(company)
+        return possible_companies
+
+    def find_company_name_cik(self, words: str) -> List[tuple[str, str]]:
+        """
+            Find possible company names and their corresponding CIKs based on input words.
+
+            This function searches through a dictionary of companies, returning a list of tuples
+            containing the names of companies and their Central Index Keys (CIKs) that match all
+            the provided words. The search is case-insensitive and considers partial matches.
+
+            Args:
+                words (str): A string containing one or more words to search for in company names.
+                             Words should be separated by spaces.
+
+            Returns:
+                List[tuple[str, str]]: A list of tuples, where each tuple contains:
+                    - company (str): The name of the company.
+                    - cik (str): The Central Index Key (CIK) associated with the company.
+                
+                If no matches are found, an empty list is returned.
+
+            Example:
+                >>> find_company_name_cik("apple inc")
+                [("Apple Inc", "0000320193")]
+
+            Note:
+                The search checks if all individual words in the input string are present in the
+                company names, ignoring case.
+        """
+        possible_companies = []
+        words = words.lower()
+        for company, cik in self.all_companies_dict.items():
+            if all(word in company.lower() for word in words.split(" ")):
+                possible_companies.append((company, cik))
         return possible_companies
 
     @classmethod
