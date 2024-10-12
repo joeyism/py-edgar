@@ -77,7 +77,7 @@ class Edgar:
                 {
                     "company_name": company,
                     "cik": cik,
-                    "score": fuzz.partial_ratio(name, company),
+                    "score": fuzz.ratio(name.upper(), company),
                 }
             )
         return sorted(result, key=lambda row: row["score"], reverse=True)[:top]

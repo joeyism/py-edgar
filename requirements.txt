@@ -2,4 +2,3 @@ requests
 lxml
 tqdm
 rapidfuzz
-

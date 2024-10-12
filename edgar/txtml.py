@@ -1,5 +1,6 @@
 from lxml.etree import tostring
 import html
+from .utils import get_text_content, extract_text_with_spacing
 
 class TXTML:
 
@@ -33,7 +34,7 @@ class TXTML:
           continue
       html, properties = TXTML.get_HTML_from_document(child)
       if properties.get('type') and '10-K' in properties['type']:
-        text = text + html.text_content()
+        text = f"{text} {extract_text_with_spacing(html)}"
     return text
 
   @classmethod

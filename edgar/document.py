@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 import requests
 from lxml import html
+from .utils import get_text_content
 
 # The required SEC EDGAR request header
 SEC_HEADERS = {
@@ -24,7 +25,7 @@ class Document:
 class Documents(str):
 
   def __get_text_from_list__(self, arr):
-    return [val.text_content() for val in arr]
+    return [get_text_content(val) for val in arr]
 
   def __init__(self, url, timeout=10):
     self.url = url

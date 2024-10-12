@@ -5,6 +5,7 @@ import requests
 from lxml import etree, html
 
 from .document import Documents
+from .utils import get_text_content
 
 BASE_URL = "https://www.sec.gov"
 
@@ -171,7 +172,9 @@ class Company:
     @classmethod
     def __get_metadata_from_element__(cls, elem) -> dict[str, str]:
         url = BASE_URL + elem.attrib["href"]
-        return Documents(url).content
+        metadata =  Documents(url).content
+        metadata["url"] = url
+        return metadata
 
     def get_10Ks(self, no_of_documents=1, as_documents=False) -> List[html.HtmlElement]:
         tree = self.get_all_filings(filing_type="10-K")
@@ -189,17 +192,16 @@ class Company:
         elems = tree.xpath('//*[@id="documentsbutton"]')[:no_of_documents]
         return [Company.__get_metadata_from_element__(elem) for elem in elems]
 
-    def get_10K(self, as_documents=False) -> List[html.HtmlElement]:
+    def get_10K(self, as_documents=False) -> html.HtmlElement:
         res = self.get_10Ks(no_of_documents=1, as_documents=as_documents)
         if res:
             return res[0]
-        return []
 
-    def get_10K_metadata(self) -> List[dict]:
+    def get_10K_metadata(self) -> dict:
         res = self.get_10Ks_metadata(no_of_documents=1)
         if res:
             return res[0]
-        return []
+        return {}
 
     @classmethod
     def get_request(cls, href, isxml=False, timeout=10):
@@ -238,5 +240,5 @@ class Company:
         CIKList = tree.xpath('//*[@id="seriesDiv"]/table/tr[*]/td[1]/a/text()')
         names_list = []
         for elem in tree.xpath('//*[@id="seriesDiv"]/table/tr[*]/td[2]'):
-            names_list.append(elem.text_content())
+            names_list.append(get_text_content(elem))
         return list(zip(CIKList, names_list))
