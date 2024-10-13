@@ -17,7 +17,7 @@ class TXTML:
     properties = {}
 
     while document.tag != 'text':
-      properties[document.tag] = cls._clean_text_(document.text)
+      properties[document.tag] = cls._clean_text_(document.text) if document.text else None
       docs = document.getchildren()
       if docs:
         document = docs[0]
